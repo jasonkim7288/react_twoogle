@@ -1,0 +1,10 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+a:link, a {
+  text-decoration: none;
+  color: inherit;
+}

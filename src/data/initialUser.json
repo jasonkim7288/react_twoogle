@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "firstName": "Jason",
+    "lastName": "Kim",
+    "userName": "@jasonkim7288",
+    "password": "1234",
+    "photo": "https://whereever-s3-bucket.s3-ap-southeast-2.amazonaws.com/twoots/Jason.png"
+  },
+  {
+    "id": "2",
+    "firstName": "Thomas",
+    "lastName": "Lee",
+    "userName": "@thomaslee",
+    "password": "1234",
+    "photo": "https://whereever-s3-bucket.s3-ap-southeast-2.amazonaws.com/twoots/thomas.jpg"
+  },
+  {
+    "id": "3",
+    "firstName": "Simon",
+    "lastName": "Kim",
+    "userName": "@simo_sultan",
+    "password": "1234",
+    "photo": "https://whereever-s3-bucket.s3-ap-southeast-2.amazonaws.com/twoots/Simon.jpg"
+  }
+]
