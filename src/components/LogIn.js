@@ -5,20 +5,30 @@ import { makeStyles } from '@material-ui/core/styles';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 
 const useStyles = makeStyles((theme) => ({
-  leftSide:  {
-    overflow: 'hidden'
+  leftSide: {
+    overflow: 'hidden',
+    height: '100vh'
   },
   icon: {
     transform: 'translate(-150px, -200px)',
     overflow: 'hidden',
     fontSize: '100vw',
     color: '#31a9f3'
+  },
+  rightSide: {
+    background: 'black',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  title: {
+    color: 'white'
   }
 }));
 
 const LogIn = ({ firebase }) => {
   const classes = useStyles();
-
+  
   const uiConfig = {
     signInFlow: 'popupt',
     signInOptions: [
@@ -37,7 +47,9 @@ const LogIn = ({ firebase }) => {
         <Grid item xs={6} className={classes.leftSide} alignItems="center">
           <TwitterIcon className={classes.icon}/>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} className={classes.rightSide}>
+
+          <Typography variant="h3" align="center" className={classes.title}>Twoogle</Typography>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
         </Grid>
       </Grid>

@@ -4,7 +4,8 @@ import { Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText } f
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import TwitterIcon from '@material-ui/icons/Twitter';
-import { Link } from 'react-router-dom';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { Link, Redirect } from 'react-router-dom';
 
 const drawerWidth = 200;
 
@@ -46,10 +47,13 @@ const menuList = [
   }
 ]
 
-const NavBar = (props) => {
-  const { window } = props;
+const NavBar = ({ window, firebase }) => {
   const classes = useStyles();
   const container = window !== undefined ? () => window().document.body : undefined;
+
+  const handleLogOut = () => {
+    firebase.auth().signOut();
+  }
 
   const drawer = (
     <div>
@@ -64,6 +68,12 @@ const NavBar = (props) => {
             </ListItem>
           </Link>
         ))}
+        <ListItem button onClick={handleLogOut}>
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          <ListItemText primary="Log out" />
+        </ListItem>
       </List>
     </div>
   );
