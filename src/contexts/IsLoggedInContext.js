@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState } from 'react'
 const IsLoggedInContext = createContext();
 
 const IsLoggedInProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
   }, [])

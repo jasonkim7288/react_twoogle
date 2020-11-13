@@ -6,10 +6,6 @@ const TwootsContext = createContext();
 const TwootsProvider = ({ children }) => {
   const [twoots, setTwoots] = useState(null);
 
-  useEffect(() => {
-    setTwoots(jsonInitialTwoots);
-  }, [])
-
   return (
     <TwootsContext.Provider value={[twoots, setTwoots]}>
       {children}

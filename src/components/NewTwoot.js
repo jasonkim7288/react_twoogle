@@ -1,56 +1,132 @@
-import React, { useContext, useState } from 'react'
-import uuid from 'react-uuid';
+import React, { useContext, useRef, useState } from 'react'
 import { TwootsContext } from '../contexts/TwootsContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Divider, IconButton, TextareaAutosize, TextField } from '@material-ui/core';
+import 'emoji-mart/css/emoji-mart.css';
+import { Picker } from 'emoji-mart'
+import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 
-const initialFormState = {
+const useStyles = makeStyles((theme) => ({
+  box: {
+    marginTop: '-1px',
+    border: '1px solid #766e61',
+    padding: '15px'
+  },
+  photo: {
+    borderRadius: '50%',
+    width: '53px'
+  },
+  details: {
+    width: '100%'
+  },
+  btn: {
+    background: '#0b76b8'
+  },
+  icons: {
+    color: '#0b76b8'
+  }
+}));
+
+const initialValues = {
   userId: '',
-  content: '',
+  msg: '',
   likes: 0,
   comments: []
 }
 
-const NewTwoot = ({history}) => {
-  const [formState, setFormState] = useState(initialFormState);
+const NewTwoot = ({history, fireDb}) => {
+  const [currentUser] = useContext(CurrentUserContext);
   const [twoots, setTwoots] = useContext(TwootsContext);
-
-  const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormState({
-      ...formState,
-      [name]: value
-    });
-  }
+  const classes = useStyles();
+  const inputMsg = useRef();
+  const [msg, setMsg] = useState('');
+  const [msgError, setMsgError] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newTwoot = {
-      id: uuid(),
-      userId: formState.userId,
-      msg: formState.msg,
-      createdAt: new Date(),
-      comments: []
+      userId: currentUser.id,
+      msg: inputMsg.current.value,
+      createdAt: (new Date()).toString(),
     };
 
-    setTwoots([
-      newTwoot,
-      ...twoots
-    ])
-    history.push(`/twoots/${newTwoot.id}`);
+    const newTwootKey = fireDb.ref('twoots/').push().key;
+    let updates = {};
+    updates['/twoots/' + newTwootKey] = newTwoot;
+    updates['/users/' + currentUser.id] = newTwoot;
+    fireDb.ref().update(updates);
+    history.push(`/twoots/${newTwootKey}`);
   }
 
-  console.log('twoots:', twoots);
+  const verifyMsg = (strMsg) => {
+    if (strMsg.length < 3 || strMsg.length > 1000) {
+      setMsgError('Twoogle message should be more than 2 letters and less then 1000 letters');
+    } else {
+      setMsgError(null);
+    }
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setMsg(value);
+    verifyMsg(value);
+  }
+
+  const handleSelectEmoji = (emoji) => {
+    const value = inputMsg.current.value + emoji.native;
+    setMsg(value);
+    verifyMsg(value);
+    setShowPicker(false);
+  }
+
+  const handleClickEmoji = () => {
+    setShowPicker(true);
+  }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="userId">User name</label>
-        <input type="text" name="userId" id="userId" onChange={handleChange}/>
-        <br />
-        <label htmlFor="msg">Message</label>
-        <input type="text" name="msg" id="msg" onChange={handleChange}/>
-        <button type="submit">New Twoot</button>
-      </form>
-    </div>
+    <Box>
+      {currentUser &&
+        <Box className={classes.box} >
+          <Box display="flex">
+            <Box mr={2}>
+            {
+              <img src={currentUser.photo} alt="photo" className={classes.photo}/>
+            }
+            </Box>
+            <Box className={classes.details}>
+              <form onSubmit={handleSubmit}>
+                <Box mb={3}>
+                  <TextField
+                    inputRef={inputMsg}
+                    name="msg"
+                    error={msgError ? true : false}
+                    helperText={msgError}
+                    fullWidth={true}
+                    multiline
+                    autoFocus
+                    onChange={handleChange}
+                    value={msg}
+                  />
+                </Box>
+                <Box component="span" mr={20} className={classes.icons}>
+                  <IconButton edge="end" color="inherit" onClick={handleClickEmoji}>
+                    <SentimentSatisfiedIcon />
+                  </IconButton>
+                </Box>
+                <Button variant="contained" color="primary" type="submit" className={classes.btn} disabled={(msgError || !inputMsg.current || !inputMsg.current.value) ? true : false}>Twoogle</Button>
+                <Box>
+                  { showPicker &&
+                    <Picker set="twitter" theme="dark" onSelect={handleSelectEmoji} />
+                  }
+                </Box>
+              </form>
+            </Box>
+          </Box>
+        </Box>
+      }
+    </Box>
   )
 }
 

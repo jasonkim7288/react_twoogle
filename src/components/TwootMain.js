@@ -29,24 +29,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TwootMain = () => {
-  const [twoots, setTwoots] = useContext(TwootsContext);
-  const [users, setUsers] = useContext(UsersContext);
-  const [currentUser, setCurrentUser] = useContext(CurrentUserContext);
+const TwootMain = ({ firebase, fireDb }) => {
   const classes = useStyles();
-
-  const getTwootFromId = (id) => {
-    return twoots.find(twoot => twoot.id == id);
-  }
 
   return (
     <main className={classes.content}>
       <div className={classes.toolbar} />
+      { fireDb &&
       <Switch>
-        <Route path="/twoots/new" render={props => <NewTwoot {...props} />} />
-        <Route path="/twoots/:id" render={props => <Twoot twoot={getTwootFromId(props.match.params.id)} showControls={true}/>} />
-        <Route exact path="/" render={props => <Twoots />} />
+        <Route path="/twoots/new" render={props => <NewTwoot {...props} fireDb={fireDb}/>} />
+        <Route path="/twoots/:id" render={props => <Twoot twootId={props.match.params.id} fireDb={fireDb} showControls={true}/>} />
+        <Route exact path="/" render={props => <Twoots fireDb={fireDb}/>} />
       </Switch>
+      }
     </main>
   )
 }

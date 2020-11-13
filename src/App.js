@@ -6,11 +6,16 @@ import { AppBar, Container, createMuiTheme, CssBaseline, MuiThemeProvider, respo
 import TwootMain from './components/TwootMain'
 import Header from './components/Header';
 import { blue, pink, deepOrange} from '@material-ui/core/colors'
-import firebase from 'firebase';
 import './styles/App.css';
 import { IsLoggedInContext } from './contexts/IsLoggedInContext';
 import LogIn from './components/LogIn';
+import { CurrentUserContext } from './contexts/CurrentUserContext';
+import { firebase, fireDb } from './db/firebase.js';
+import { TwootsContext } from './contexts/TwootsContext';
+import { emailToId } from './utils/strUtils';
+import { UsersContext } from './contexts/UsersContext';
 
+console.log('firebase, fireDb:', firebase, fireDb);
 
 const drawerWidth = 200;
 
@@ -44,45 +49,59 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-firebase.initializeApp({
-  apiKey: "AIzaSyA8IjIXj8oKzpeNPzNb87mSB2GrfYIQ22c",
-  authDomain: "fir-auth-c91a1.firebaseapp.com",
-  databaseURL: "https://fir-auth-c91a1.firebaseio.com",
-  projectId: "fir-auth-c91a1",
-  storageBucket: "fir-auth-c91a1.appspot.com",
-  messagingSenderId: "92877570975",
-  appId: "1:92877570975:web:3e270fbb2cb681cba033aa",
-  measurementId: "G-JB0NZ4TZSW"
-})
-
 const App = () => {
   const classes = useStyles();
-  console.log('darkTheme:', darkTheme);
   const [isLoggedIn, setIsLoggedIn] = useContext(IsLoggedInContext);
+  const [, setCurrentUser] = useContext(CurrentUserContext);
+  const [twoots, setTwoots] = useContext(TwootsContext);
+  const [, setUsers] = useContext(UsersContext);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
-      setIsLoggedIn(!!user)
-    })
+      console.log('user:', user);
+      if (user) {
+        const newUser = {
+          id: user.uid,
+          displayName: user.displayName,
+          userName: emailToId(user.email),
+          photo: user.photoURL
+        }
+        fireDb.ref('users/' + user.uid).set(newUser);
+        setIsLoggedIn(true);
+        setCurrentUser(newUser);
+
+        fireDb.ref('users')
+        .once('value')
+        .then(snapshot => {
+          console.log('here', snapshot.val());
+          setUsers(snapshot.val());
+      });
+      } else {
+        setIsLoggedIn(false);
+        setCurrentUser(null);
+      }
+    });
   }, [])
 
   return (
     <div>
-    { isLoggedIn ? (
-    <MuiThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Header />
-          <NavBar firebase={firebase} />
-          <TwootMain />
-        </div>
-      </BrowserRouter>
-    </MuiThemeProvider>
-    )
-    :
-      <LogIn firebase={firebase} />
+    { isLoggedIn === null ?
+      <div /> : (
+        isLoggedIn ?
+          <MuiThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <BrowserRouter>
+              <div className={classes.root}>
+                <CssBaseline />
+                <Header />
+                <NavBar firebase={firebase}/>
+                <TwootMain firebase={firebase} fireDb={fireDb}/>
+              </div>
+            </BrowserRouter>
+          </MuiThemeProvider>
+        :
+          <LogIn firebase={firebase} />
+      )
     }
     </div>
   )

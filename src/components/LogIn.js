@@ -26,9 +26,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const LogIn = ({ firebase }) => {
+const LogIn = ({firebase}) => {
   const classes = useStyles();
-  
+
   const uiConfig = {
     signInFlow: 'popupt',
     signInOptions: [
@@ -42,9 +42,9 @@ const LogIn = ({ firebase }) => {
   return (
     <Box>
       <Typography />
-      
-      <Grid container>
-        <Grid item xs={6} className={classes.leftSide} alignItems="center">
+
+      <Grid container alignItems="center">
+        <Grid item xs={6} className={classes.leftSide} >
           <TwitterIcon className={classes.icon}/>
         </Grid>
         <Grid item xs={6} className={classes.rightSide}>

@@ -1,6 +1,6 @@
 import { Box, IconButton, Paper, Typography } from '@material-ui/core'
-import React, { useContext } from 'react'
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import React, { useContext, useState, useEffect } from 'react'
+import { makeStyles } from '@material-ui/core/styles';
 import { UsersContext } from '../contexts/UsersContext';
 import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import FavoriteBorderSharpIcon from '@material-ui/icons/FavoriteBorderSharp';
@@ -34,18 +34,30 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Twoot = ({ twoot }) => {
+const Twoot = ({ twootId, fireDb }) => {
   const classes = useStyles();
-  const [users, setUsers] = useContext(UsersContext);
+  const [users, ] = useContext(UsersContext);
+  const [twoot, setTwoot] = useState(null);
+
+  console.log('users:', users);
+
+  useEffect(() => {
+    fireDb.ref('twoots/' + twootId)
+    .once('value')
+    .then(snapshot => {
+      console.log('twoot snapshot.val():', snapshot.val());
+      setTwoot(snapshot.val());
+      console.log('users:', users);
+    })
+  }, []);
 
   const getUser = (id) => {
-    console.log(users.find(user => user.id === id));
-    return users.find(user => user.id === id);
+    return users[id];
   }
 
   return (
-    <div>
-      <Box className={classes.box} >
+    <Box className={classes.box} >
+      {twoot &&
         <Box display="flex">
           <Box mr={2}>
           {
@@ -55,7 +67,7 @@ const Twoot = ({ twoot }) => {
           <Box className={classes.details}>
             <Typography paragraph className={classes.fullName}>
               <Box component="span" mr={1}>
-                {`${getUser(twoot.userId).firstName} ${getUser(twoot.userId).lastName}`}
+                {`${getUser(twoot.userId).displayName}`}
               </Box>
               <Box component="span" className={classes.userName}>
                 {`${getUser(twoot.userId).userName}`}
@@ -91,8 +103,8 @@ const Twoot = ({ twoot }) => {
             </Box>
           </Box>
         </Box>
-      </Box>
-    </div>
+      }
+    </Box>
   )
 }
 

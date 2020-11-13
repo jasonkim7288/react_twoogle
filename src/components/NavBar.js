@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
@@ -42,7 +42,7 @@ const menuList = [
   },
   {
     to: '/twoots/new',
-    title: 'Twoot',
+    title: 'Twoogle',
     icon: <TwitterIcon />
   }
 ]
@@ -61,8 +61,8 @@ const NavBar = ({ window, firebase }) => {
       <Divider />
       <List>
         {menuList.map((menu, index) => (
-          <Link to={menu.to}>
-            <ListItem button key={menu.title}>
+          <Link to={menu.to} key={menu.title}>
+            <ListItem button>
               <ListItemIcon>{menu.icon}</ListItemIcon>
               <ListItemText primary={menu.title} />
             </ListItem>

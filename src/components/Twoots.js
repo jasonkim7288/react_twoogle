@@ -1,18 +1,26 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TwootsContext } from '../contexts/TwootsContext';
 import Twoot from './Twoot';
 
-const Twoots = () => {
+const Twoots = ({ fireDb }) => {
   const [twoots, setTwoots] = useContext(TwootsContext);
-  console.log('twoots:', twoots);
+  useEffect(() => {
+    fireDb.ref('twoots/')
+      .once('value')
+      .then(snapshot => {
+        setTwoots(snapshot.val());
+        console.log('snapshot.val():', snapshot.val());
+      })
+  }, [])
+
   return (
     <div>
       {
         twoots &&
-        twoots.map(twoot => (
-            <Link to={`/twoots/${twoot.id}`} key={twoot.id} >
-              <Twoot twoot={twoot} />
+        Object.keys(twoots).map(twootKey => (
+            <Link to={`/twoots/${twootKey}`} key={twootKey} >
+              <Twoot twootId={twootKey} fireDb={fireDb} />
             </Link>
           )
         )
