@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TwootMain = ({ firebase, fireDb }) => {
+const TwootMain = ({ fireDb, history }) => {
   const classes = useStyles();
 
   return (
@@ -38,8 +38,9 @@ const TwootMain = ({ firebase, fireDb }) => {
       { fireDb &&
       <Switch>
         <Route path="/twoots/new" render={props => <NewTwoot {...props} fireDb={fireDb}/>} />
-        <Route path="/twoots/:id" render={props => <Twoot twootId={props.match.params.id} fireDb={fireDb} showControls={true}/>} />
-        <Route exact path="/" render={props => <Twoots fireDb={fireDb}/>} />
+        <Route exact path="/twoots/:id/edit" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id}/>} />
+        <Route exact path="/twoots/:id" render={props => <Twoot {...props} twootId={props.match.params.id} fireDb={fireDb}/>} />
+        <Route exact path="/" render={props => <Twoots {...props} fireDb={fireDb}/>} />
       </Switch>
       }
     </main>

@@ -57,6 +57,13 @@ const App = () => {
   const [, setUsers] = useContext(UsersContext);
 
   useEffect(() => {
+    fireDb.ref('users')
+      .once('value')
+      .then(snapshot => {
+        console.log('here', snapshot.val());
+        setUsers(snapshot.val());
+      });
+
     firebase.auth().onAuthStateChanged(user => {
       console.log('user:', user);
       if (user) {
@@ -70,12 +77,6 @@ const App = () => {
         setIsLoggedIn(true);
         setCurrentUser(newUser);
 
-        fireDb.ref('users')
-        .once('value')
-        .then(snapshot => {
-          console.log('here', snapshot.val());
-          setUsers(snapshot.val());
-      });
       } else {
         setIsLoggedIn(false);
         setCurrentUser(null);

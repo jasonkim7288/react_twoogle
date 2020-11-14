@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { TwootsContext } from '../contexts/TwootsContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,9 +35,9 @@ const initialValues = {
   comments: []
 }
 
-const NewTwoot = ({history, fireDb}) => {
+const NewTwoot = ({history, fireDb, twootId}) => {
   const [currentUser] = useContext(CurrentUserContext);
-  const [twoots, setTwoots] = useContext(TwootsContext);
+  const [twoots, setTwoots] = useContext(TwootsContext);  
   const classes = useStyles();
   const inputMsg = useRef();
   const [msg, setMsg] = useState('');
@@ -46,20 +46,30 @@ const NewTwoot = ({history, fireDb}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newTwoot = {
-      userId: currentUser.id,
-      msg: inputMsg.current.value,
-      createdAt: (new Date()).toString(),
-    };
-
-    const newTwootKey = fireDb.ref('twoots/').push().key;
-    let updates = {};
-    updates['/twoots/' + newTwootKey] = newTwoot;
-    updates['/users/' + currentUser.id] = newTwoot;
-    fireDb.ref().update(updates);
-    history.push(`/twoots/${newTwootKey}`);
+    if (twootId) {
+      fireDb.ref('twoots/' + twootId).transaction(twoot => {
+        if (twoot) {
+          twoot.msg = msg;
+        }
+        history.push(`/twoots/${twootId}`);
+        return twoot;
+      });
+    } else {
+      const newTwoot = {
+        userId: currentUser.id,
+        msg: inputMsg.current.value,
+        createdAt: (new Date()).toString(),
+      };
+      
+      const newTwootKey = fireDb.ref('twoots/').push().key;
+      let updates = {};
+      updates['/twoots/' + newTwootKey] = newTwoot;
+      updates['/users/' + currentUser.id] = newTwoot;
+      fireDb.ref().update(updates);
+      history.push(`/twoots/${newTwootKey}`);
+    }
   }
-
+    
   const verifyMsg = (strMsg) => {
     if (strMsg.length < 3 || strMsg.length > 1000) {
       setMsgError('Twoogle message should be more than 2 letters and less then 1000 letters');
@@ -84,6 +94,17 @@ const NewTwoot = ({history, fireDb}) => {
   const handleClickEmoji = () => {
     setShowPicker(true);
   }
+
+  useEffect(() => {
+    if (twootId) {
+      fireDb.ref('twoots/' + twootId)
+        .once('value')
+        .then(snapshot => {
+          console.log('edit twoot snapshot.val():', snapshot.val());
+          setMsg(snapshot.val().msg);
+        });
+    }
+  }, [])
 
   return (
     <Box>

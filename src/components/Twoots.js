@@ -3,25 +3,27 @@ import { Link } from 'react-router-dom';
 import { TwootsContext } from '../contexts/TwootsContext';
 import Twoot from './Twoot';
 
-const Twoots = ({ fireDb }) => {
+const Twoots = ({ fireDb, history }) => {
   const [twoots, setTwoots] = useContext(TwootsContext);
   useEffect(() => {
     fireDb.ref('twoots/')
-      .once('value')
-      .then(snapshot => {
+      .on('value', snapshot => {
+        console.log('snapshot:', snapshot);
         setTwoots(snapshot.val());
         console.log('snapshot.val():', snapshot.val());
-      })
+      });
   }, [])
+
+  
+  const twootKeys = twoots ? Object.keys(twoots).sort((a, b) => {console.log('a.attr:', typeof a); return a.attr - b.attr}) : null;
+  console.log('twootKeys:', twootKeys)
 
   return (
     <div>
       {
         twoots &&
-        Object.keys(twoots).map(twootKey => (
-            <Link to={`/twoots/${twootKey}`} key={twootKey} >
-              <Twoot twootId={twootKey} fireDb={fireDb} />
-            </Link>
+        twootKeys.map(twootKey => (
+            <Twoot history={history} twootId={twootKey} fireDb={fireDb} key={twootKey} linkNeeded={true}/>
           )
         )
       }
