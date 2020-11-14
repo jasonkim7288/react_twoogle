@@ -5,6 +5,7 @@ import { UsersContext } from '../contexts/UsersContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import FavoriteBorderSharpIcon from '@material-ui/icons/FavoriteBorderSharp';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import EditIcon from '@material-ui/icons/Edit';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -37,7 +38,16 @@ const useStyles = makeStyles((theme) => ({
   },
   msg: {
     fontSize: '1.3em',
-    fontWeight: '100'
+    fontWeight: '100',
+    whiteSpace: 'pre-line'
+  },
+  msgForShow: {
+    fontSize: '1.9em',
+    fontWeight: '100',
+    whiteSpace: 'pre-line'
+  },
+  heart: {
+    color: 'red'
   }
 }));
 
@@ -95,11 +105,34 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
     setOpenSnackbar(false);
   }
 
+  const handleLike = () => {
+    fireDb.ref('twoots/' + twootId).transaction(twootFromDb => {
+      if (twootFromDb) {
+        if (twootFromDb.likes && twootFromDb.likes[currentUser.id]) {
+          twootFromDb.likeCount--;
+          twootFromDb.likes[currentUser.id] = null;
+        } else {
+          twootFromDb.likeCount++;
+          if (!twootFromDb.likes) {
+            twootFromDb.likes = {};
+          }
+          twootFromDb.likes[currentUser.id] = true;
+        }
+        setTwoot(twootFromDb);
+      }
+      console.log('twootFromDb:', twootFromDb);
+      return twootFromDb;
+    })
+  }
+
+  const handleComment = () => {
+    history.push(`/twoots/${twootId}/comments/new`);
+  }
+
   return (
-    <Box className={classes.box} >
-      <h1>{openSnackbar}</h1>
-      {twoot && users &&
-        <Box display="flex">
+    <Box >
+      {twoot && users && currentUser &&
+        <Box display="flex" className={classes.box}>
           <LinkBox twootId={twootId} linkNeeded={linkNeeded}>
             <Box mr={2}>
             {
@@ -117,26 +150,30 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
                   {`${getUser(twoot.userId).userName}`}
                 </Box>
               </Typography>
-              <Typography paragraph className={classes.msg}>
+              <Typography paragraph className={linkNeeded ? classes.msg : classes.msgForShow}>
                 {`${twoot.msg}`}
               </Typography>
             </LinkBox>
             <Box display="flex" justifyContent="space-between">
-              <IconBox num={3} tooltipTitle="Comment">
+              <IconBox num={twoot.commentCount} handleClick={handleComment} tooltipTitle="Comment">
                 <ChatBubbleOutlineIcon  className={classes.userName}/>
               </IconBox>
-              <IconBox num={3} tooltipTitle="Like">
-                <FavoriteBorderSharpIcon  className={classes.userName}/>
+              <IconBox num={twoot.likeCount} handleClick={handleLike} tooltipTitle="Like">
+                {
+                  (twoot.likes && twoot.likes[currentUser.id] === true) ?
+                    <FavoriteIcon className={classes.heart}/> :
+                    <FavoriteBorderSharpIcon  className={classes.userName}/>
+                }
               </IconBox>
               <IconBox handleClick={handleClipboard} tooltipTitle="Copy message to clipboard">
                 <FileCopyIcon className={classes.userName} />
               </IconBox>
-              { currentUser && currentUser.id === twoot.userId &&
+              { currentUser.id === twoot.userId &&
                   <IconBox handleClick={handleEdit} tooltipTitle="Edit">
                     <EditIcon className={classes.userName}  />
                   </IconBox>
               }
-              { currentUser && currentUser.id === twoot.userId &&
+              { currentUser.id === twoot.userId &&
                   <IconBox handleClick={handleDelete} tooltipTitle="Delete">
                     <DeleteOutlineIcon className={classes.userName} />
                   </IconBox>
@@ -145,8 +182,33 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
           </Box>
         </Box>
       }
+      { !linkNeeded && twoot && users && currentUser && twoot.comments &&
+        Object.keys(twoot.comments).map(commentKey =>
+          <Box display="flex" className={classes.box}>
+            <Box mr={2}>
+              <img src={getUser(twoot.comments[commentKey].userId).photo} alt="photo" className={classes.photo}/>
+            </Box>
+            <Box className={classes.details}>
+              <Typography paragraph className={classes.fullName}>
+                <Box component="span" mr={1}>
+                  {`${getUser(twoot.comments[commentKey].userId).displayName}`}
+                </Box>
+                <Box component="span" className={classes.userName}>
+                  {`${getUser(twoot.comments[commentKey].userId).userName}`}
+                </Box>
+              </Typography>
+              <Typography paragraph className={classes.userName}>
+                Replying to {getUser(twoot.userId).userName}
+              </Typography>
+              <Typography paragraph className={classes.msg}>
+                {`${twoot.comments[commentKey].msg}`}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      }
       <AlertDialog open={open} setOpen={setOpen} handleOk={handleDeleteOk} />
-      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center'}}>
+      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center'}}>
         <Alert onClose={handleCloseSnackbar} severity="success">
           Copied to clipboard!
         </Alert>

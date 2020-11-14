@@ -38,6 +38,7 @@ const TwootMain = ({ fireDb, history }) => {
       { fireDb &&
       <Switch>
         <Route path="/twoots/new" render={props => <NewTwoot {...props} fireDb={fireDb}/>} />
+        <Route exact path="/twoots/:id/comments/new" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id} isComment={true}/>} />
         <Route exact path="/twoots/:id/edit" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id}/>} />
         <Route exact path="/twoots/:id" render={props => <Twoot {...props} twootId={props.match.params.id} fireDb={fireDb}/>} />
         <Route exact path="/" render={props => <Twoots {...props} fireDb={fireDb}/>} />

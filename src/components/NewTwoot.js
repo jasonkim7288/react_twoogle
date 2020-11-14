@@ -28,16 +28,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const initialValues = {
-  userId: '',
-  msg: '',
-  likes: 0,
-  comments: []
-}
-
-const NewTwoot = ({history, fireDb, twootId}) => {
+const NewTwoot = ({history, fireDb, twootId, isComment}) => {
   const [currentUser] = useContext(CurrentUserContext);
-  const [twoots, setTwoots] = useContext(TwootsContext);  
+  const [twoots, setTwoots] = useContext(TwootsContext);
   const classes = useStyles();
   const inputMsg = useRef();
   const [msg, setMsg] = useState('');
@@ -46,7 +39,26 @@ const NewTwoot = ({history, fireDb, twootId}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (twootId) {
+    if (isComment) {
+      fireDb.ref('twoots/' + twootId).transaction(twootFromDb => {
+        if (twootFromDb) {
+          twootFromDb.commentCount++;
+        }
+        return twootFromDb;
+      });
+      const newComment = {
+        userId: currentUser.id,
+        msg: inputMsg.current.value,
+        likeCount: 0,
+        commentCount: 0,
+        createdAt: (new Date()).toString()
+      };
+      const newCommentKey = fireDb.ref('twoots/' + twootId + '/comments/').push().key;
+      let updates = {};
+      updates['twoots/' + twootId + '/comments/' + newCommentKey] = newComment;
+      fireDb.ref().update(updates);
+      history.push(`/twoots/${twootId}`);
+    } else if (twootId) {
       fireDb.ref('twoots/' + twootId).transaction(twoot => {
         if (twoot) {
           twoot.msg = msg;
@@ -58,18 +70,20 @@ const NewTwoot = ({history, fireDb, twootId}) => {
       const newTwoot = {
         userId: currentUser.id,
         msg: inputMsg.current.value,
+        likeCount: 0,
+        commentCount: 0,
         createdAt: (new Date()).toString(),
       };
-      
+
       const newTwootKey = fireDb.ref('twoots/').push().key;
       let updates = {};
       updates['/twoots/' + newTwootKey] = newTwoot;
-      updates['/users/' + currentUser.id] = newTwoot;
+      // updates['/users/' + currentUser.id + '/' + newTwootKey] = newTwoot;
       fireDb.ref().update(updates);
       history.push(`/twoots/${newTwootKey}`);
     }
   }
-    
+
   const verifyMsg = (strMsg) => {
     if (strMsg.length < 3 || strMsg.length > 1000) {
       setMsgError('Twoogle message should be more than 2 letters and less then 1000 letters');
@@ -96,7 +110,9 @@ const NewTwoot = ({history, fireDb, twootId}) => {
   }
 
   useEffect(() => {
-    if (twootId) {
+    if (isComment) {
+
+    } else if (twootId) {
       fireDb.ref('twoots/' + twootId)
         .once('value')
         .then(snapshot => {
@@ -136,7 +152,7 @@ const NewTwoot = ({history, fireDb, twootId}) => {
                     <SentimentSatisfiedIcon />
                   </IconButton>
                 </Box>
-                <Button variant="contained" color="primary" type="submit" className={classes.btn} disabled={(msgError || !inputMsg.current || !inputMsg.current.value) ? true : false}>Twoogle</Button>
+                <Button variant="contained" color="primary" type="submit" className={classes.btn} disabled={(msgError || !inputMsg.current || !inputMsg.current.value) ? true : false}>{isComment ? 'Comment' : 'Twoogle'}</Button>
                 <Box>
                   { showPicker &&
                     <Picker set="twitter" theme="dark" onSelect={handleSelectEmoji} />
