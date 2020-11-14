@@ -14,9 +14,8 @@ const Twoots = ({ fireDb, history }) => {
       });
   }, [])
 
-  
-  const twootKeys = twoots ? Object.keys(twoots).sort((a, b) => {console.log('a.attr:', typeof a); return a.attr - b.attr}) : null;
-  console.log('twootKeys:', twootKeys)
+
+  const twootKeys = twoots ? Object.keys(twoots).reverse() : null;
 
   return (
     <div>

@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
     background: 'black',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    height: '100vh'
   },
   title: {
     color: 'white'
@@ -30,7 +31,7 @@ const LogIn = ({firebase}) => {
   const classes = useStyles();
 
   const uiConfig = {
-    signInFlow: 'popupt',
+    signInFlow: 'popup',
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID
     ],
@@ -48,9 +49,8 @@ const LogIn = ({firebase}) => {
           <TwitterIcon className={classes.icon}/>
         </Grid>
         <Grid item xs={6} className={classes.rightSide}>
-
           <Typography variant="h3" align="center" className={classes.title}>Twoogle</Typography>
-          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()}/>
         </Grid>
       </Grid>
     </Box>

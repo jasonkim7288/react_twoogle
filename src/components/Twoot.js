@@ -1,4 +1,4 @@
-import { Box, IconButton, Paper, Typography } from '@material-ui/core'
+import { Box, IconButton, Paper, Snackbar, Typography } from '@material-ui/core'
 import React, { useContext, useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { UsersContext } from '../contexts/UsersContext';
@@ -11,6 +11,7 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import IconBox from './IconBox';
 import LinkBox from './LinkBox';
 import AlertDialog from './AlertDialog';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -40,12 +41,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props}/>;
+}
+
 const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   const classes = useStyles();
   const [users, ] = useContext(UsersContext);
   const [currentUser, ] = useContext(CurrentUserContext)
   const [twoot, setTwoot] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   console.log('users:', users);
 
@@ -77,8 +83,21 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
     history.push('/')
   }
 
+  const handleClipboard = () => {
+    navigator.clipboard.writeText(twoot.msg);
+    setOpenSnackbar(true);
+  }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  }
+
   return (
     <Box className={classes.box} >
+      <h1>{openSnackbar}</h1>
       {twoot && users &&
         <Box display="flex">
           <LinkBox twootId={twootId} linkNeeded={linkNeeded}>
@@ -103,24 +122,23 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
               </Typography>
             </LinkBox>
             <Box display="flex" justifyContent="space-between">
-              <IconBox num={3}>
+              <IconBox num={3} tooltipTitle="Comment">
                 <ChatBubbleOutlineIcon  className={classes.userName}/>
               </IconBox>
-              <IconBox num={3}>
+              <IconBox num={3} tooltipTitle="Like">
                 <FavoriteBorderSharpIcon  className={classes.userName}/>
               </IconBox>
-              <IconBox>
+              <IconBox handleClick={handleClipboard} tooltipTitle="Copy message to clipboard">
                 <FileCopyIcon className={classes.userName} />
               </IconBox>
               { currentUser && currentUser.id === twoot.userId &&
-                  <IconBox handleClick={handleEdit} >
+                  <IconBox handleClick={handleEdit} tooltipTitle="Edit">
                     <EditIcon className={classes.userName}  />
                   </IconBox>
               }
               { currentUser && currentUser.id === twoot.userId &&
-                  <IconBox handleClick={handleDelete}>
+                  <IconBox handleClick={handleDelete} tooltipTitle="Delete">
                     <DeleteOutlineIcon className={classes.userName} />
-                    
                   </IconBox>
               }
               </Box>
@@ -128,6 +146,11 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
         </Box>
       }
       <AlertDialog open={open} setOpen={setOpen} handleOk={handleDeleteOk} />
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center'}}>
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          Copied to clipboard!
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
