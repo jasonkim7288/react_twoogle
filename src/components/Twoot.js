@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
   box: {
     marginTop: '-1px',
     border: '1px solid #766e61',
-    padding: '15px'
+    padding: '15px',
+    maxWidth: '800px'
   },
   photo: {
     borderRadius: '50%',
@@ -222,39 +223,43 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
       { !linkNeeded && twoot && users && currentUser && twoot.comments &&
         Object.keys(twoot.comments).reverse().map(commentKey =>
           <Box display="flex" className={classes.box} ml={2} key={commentKey}>
-            <Box mr={2}>
-              <img src={getUser(twoot.comments[commentKey].userId).photo} alt="User" className={classes.photo}/>
-            </Box>
-            <Box className={classes.details}>
-              <Typography paragraph className={classes.fullName}>
-                <Box component="span" mr={1}>
-                  {`${getUser(twoot.comments[commentKey].userId).displayName}`}
-                </Box>
-                <Box component="span" className={classes.userName}>
-                  {`${getUser(twoot.comments[commentKey].userId).userName}`}
-                </Box>
-              </Typography>
-              <Typography paragraph className={classes.userName}>
-                Replying to {getUser(twoot.userId).userName}
-              </Typography>
-              <Typography paragraph className={classes.msg}>
-                {`${twoot.comments[commentKey].msg}`}
-              </Typography>
-              <Box display="flex" justifyContent="space-between">
-                <IconBox num={twoot.comments[commentKey].likeCount} handleClick={() => handleCommentLike(commentKey)} tooltipTitle="Like">
-                  {
-                    (twoot.comments[commentKey].likes && twoot.comments[commentKey].likes[currentUser.id] === true) ?
-                      <FavoriteIcon className={classes.heart}/> :
-                      <FavoriteBorderSharpIcon  className={classes.userName}/>
-                  }
-                </IconBox>
-                { currentUser.id === twoot.comments[commentKey].userId &&
-                  <IconBox handleClick={() => handleCommentDelete(commentKey)} tooltipTitle="Delete">
-                    <DeleteOutlineIcon className={classes.userName} />
-                  </IconBox>
-              }
+            { twoot.comments[commentKey] &&
+              <Box mr={2}>
+                <img src={getUser(twoot.comments[commentKey].userId).photo} alt="User" className={classes.photo}/>
               </Box>
-            </Box>
+            }
+            { twoot.comments[commentKey] &&
+              <Box className={classes.details}>
+                <Typography paragraph className={classes.fullName}>
+                  <Box component="span" mr={1}>
+                    {`${getUser(twoot.comments[commentKey].userId).displayName}`}
+                  </Box>
+                  <Box component="span" className={classes.userName}>
+                    {`${getUser(twoot.comments[commentKey].userId).userName}`}
+                  </Box>
+                </Typography>
+                <Typography paragraph className={classes.userName}>
+                  Replying to {getUser(twoot.userId).userName}
+                </Typography>
+                <Typography paragraph className={classes.msg}>
+                  {`${twoot.comments[commentKey].msg}`}
+                </Typography>
+                <Box display="flex" justifyContent="space-between">
+                  <IconBox num={twoot.comments[commentKey].likeCount} handleClick={() => handleCommentLike(commentKey)} tooltipTitle="Like">
+                    {
+                      (twoot.comments[commentKey].likes && twoot.comments[commentKey].likes[currentUser.id] === true) ?
+                        <FavoriteIcon className={classes.heart}/> :
+                        <FavoriteBorderSharpIcon  className={classes.userName}/>
+                    }
+                  </IconBox>
+                  { currentUser.id === twoot.comments[commentKey].userId &&
+                    <IconBox handleClick={() => handleCommentDelete(commentKey)} tooltipTitle="Delete">
+                      <DeleteOutlineIcon className={classes.userName} />
+                    </IconBox>
+                }
+                </Box>
+              </Box>
+            }
           </Box>
         )
       }
