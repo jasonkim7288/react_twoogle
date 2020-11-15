@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { TwootsContext } from '../contexts/TwootsContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Divider, IconButton, TextareaAutosize, TextField } from '@material-ui/core';
+import { Box, Button, IconButton, TextField } from '@material-ui/core';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart'
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
@@ -30,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
 
 const NewTwoot = ({history, fireDb, twootId, isComment}) => {
   const [currentUser] = useContext(CurrentUserContext);
-  const [twoots, setTwoots] = useContext(TwootsContext);
   const classes = useStyles();
   const inputMsg = useRef();
   const [msg, setMsg] = useState('');
@@ -120,6 +118,7 @@ const NewTwoot = ({history, fireDb, twootId, isComment}) => {
           setMsg(snapshot.val().msg);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -129,7 +128,7 @@ const NewTwoot = ({history, fireDb, twootId, isComment}) => {
           <Box display="flex">
             <Box mr={2}>
             {
-              <img src={currentUser.photo} alt="photo" className={classes.photo}/>
+              <img src={currentUser.photo} alt="current user" className={classes.photo}/>
             }
             </Box>
             <Box className={classes.details}>

@@ -1,5 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react'
-import initialUser from '../data/initialUser.json'
+import React, { createContext, useState } from 'react'
 
 const UsersContext = createContext();
 

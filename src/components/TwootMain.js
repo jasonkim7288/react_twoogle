@@ -1,12 +1,9 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Twoots from './Twoots';
-import { TwootsContext } from '../contexts/TwootsContext';
 import Twoot from './Twoot';
 import NewTwoot from './NewTwoot';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { UsersContext } from '../contexts/UsersContext';
 
 
 const drawerWidth = 200;

@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 200;
 
@@ -49,7 +49,6 @@ const menuList = [
 
 const NavBar = ({ window, firebase }) => {
   const classes = useStyles();
-  const container = window !== undefined ? () => window().document.body : undefined;
 
   const handleLogOut = () => {
     firebase.auth().signOut();

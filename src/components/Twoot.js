@@ -1,4 +1,4 @@
-import { Box, IconButton, Paper, Snackbar, Typography } from '@material-ui/core'
+import { Box, Snackbar, Typography } from '@material-ui/core'
 import React, { useContext, useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { UsersContext } from '../contexts/UsersContext';
@@ -66,13 +66,15 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   console.log('users:', users);
 
   useEffect(() => {
-    fireDb.ref('twoots/' + twootId)
-    .once('value', snapshot => {
-      console.log('twoot snapshot.val():', snapshot.val());
-      setTwoot(snapshot.val());
-      console.log('users:', users);
-    })
-  }, []);
+    if (!twoot) {
+      fireDb.ref('twoots/' + twootId)
+      .once('value', snapshot => {
+        console.log('twoot snapshot.val():', snapshot.val());
+        setTwoot(snapshot.val());
+        console.log('users:', users);
+      })
+    }
+  });
 
   const getUser = (id) => {
     console.log('id:', id);
@@ -136,7 +138,7 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
           <LinkBox twootId={twootId} linkNeeded={linkNeeded}>
             <Box mr={2}>
             {
-              <img src={getUser(twoot.userId).photo} alt="photo" className={classes.photo}/>
+              <img src={getUser(twoot.userId).photo} alt="User" className={classes.photo}/>
             }
             </Box>
           </LinkBox>
@@ -186,7 +188,7 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
         Object.keys(twoot.comments).map(commentKey =>
           <Box display="flex" className={classes.box}>
             <Box mr={2}>
-              <img src={getUser(twoot.comments[commentKey].userId).photo} alt="photo" className={classes.photo}/>
+              <img src={getUser(twoot.comments[commentKey].userId).photo} alt="User" className={classes.photo}/>
             </Box>
             <Box className={classes.details}>
               <Typography paragraph className={classes.fullName}>

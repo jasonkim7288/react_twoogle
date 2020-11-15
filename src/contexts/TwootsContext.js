@@ -1,5 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react'
-import jsonInitialTwoots from '../data/initialTwoots.json'
+import React, { createContext, useState } from 'react'
 
 const TwootsContext = createContext();
 
