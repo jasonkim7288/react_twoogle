@@ -57,13 +57,16 @@ function Alert(props) {
 
 const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   const classes = useStyles();
-  const [users, ] = useContext(UsersContext);
+  const [users] = useContext(UsersContext);
   const [currentUser, ] = useContext(CurrentUserContext)
   const [twoot, setTwoot] = useState(null);
   const [open, setOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+
   console.log('users:', users);
+  console.log('twootId:', twootId);
+  console.log('twoot:', twoot);
 
   useEffect(() => {
     fireDb.ref('twoots/' + twootId)
@@ -92,6 +95,18 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   const handleDeleteOk = () => {
     fireDb.ref('twoots/' + twootId).remove();
     history.push('/')
+  }
+
+  const handleCommentDelete = (commentKey) => {
+    fireDb.ref('twoots/' + twootId).transaction(twootFromDb => {
+      if (twootFromDb && twootFromDb.comments) {
+        delete twootFromDb.comments[commentKey];
+        twootFromDb.commentCount--;
+        setTwoot(twootFromDb);
+      }
+      console.log('twootFromDb:', twootFromDb);
+      return twootFromDb;
+    });
   }
 
   const handleClipboard = () => {
@@ -123,7 +138,28 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
       }
       console.log('twootFromDb:', twootFromDb);
       return twootFromDb;
-    })
+    });
+  }
+
+  const handleCommentLike = (commentKey) => {
+    fireDb.ref('twoots/' + twootId).transaction(twootFromDb => {
+      if (twootFromDb && twootFromDb.comments) {
+        let comment = twootFromDb.comments[commentKey];
+        if (comment.likes && comment.likes[currentUser.id]) {
+          comment.likeCount--;
+          comment.likes[currentUser.id] = null;
+        } else {
+          comment.likeCount++;
+          if (!comment.likes) {
+            comment.likes = {};
+          }
+          comment.likes[currentUser.id] = true;
+        }
+        setTwoot(twootFromDb);
+      }
+      console.log('twootFromDb:', twootFromDb);
+      return twootFromDb;
+    });
   }
 
   const handleComment = () => {
@@ -184,8 +220,8 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
         </Box>
       }
       { !linkNeeded && twoot && users && currentUser && twoot.comments &&
-        Object.keys(twoot.comments).map(commentKey =>
-          <Box display="flex" className={classes.box} ml={2}>
+        Object.keys(twoot.comments).reverse().map(commentKey =>
+          <Box display="flex" className={classes.box} ml={2} key={commentKey}>
             <Box mr={2}>
               <img src={getUser(twoot.comments[commentKey].userId).photo} alt="User" className={classes.photo}/>
             </Box>
@@ -204,6 +240,20 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
               <Typography paragraph className={classes.msg}>
                 {`${twoot.comments[commentKey].msg}`}
               </Typography>
+              <Box display="flex" justifyContent="space-between">
+                <IconBox num={twoot.comments[commentKey].likeCount} handleClick={() => handleCommentLike(commentKey)} tooltipTitle="Like">
+                  {
+                    (twoot.comments[commentKey].likes && twoot.comments[commentKey].likes[currentUser.id] === true) ?
+                      <FavoriteIcon className={classes.heart}/> :
+                      <FavoriteBorderSharpIcon  className={classes.userName}/>
+                  }
+                </IconBox>
+                { currentUser.id === twoot.comments[commentKey].userId &&
+                  <IconBox handleClick={() => handleCommentDelete(commentKey)} tooltipTitle="Delete">
+                    <DeleteOutlineIcon className={classes.userName} />
+                  </IconBox>
+              }
+              </Box>
             </Box>
           </Box>
         )

@@ -41,21 +41,19 @@ const NewTwoot = ({history, fireDb, twootId, isComment}) => {
       fireDb.ref('twoots/' + twootId).transaction(twootFromDb => {
         if (twootFromDb) {
           twootFromDb.commentCount++;
+          const newComment = {
+            userId: currentUser.id,
+            msg: inputMsg.current.value,
+            likeCount: 0,
+            commentCount: 0,
+            createdAt: (new Date()).toString()
+          };
+          const newCommentKey = fireDb.ref('twoots/' + twootId + '/comments/').push().key;
+          twootFromDb.comments[newCommentKey] = newComment;
         }
+        history.push(`/twoots/${twootId}`);
         return twootFromDb;
       });
-      const newComment = {
-        userId: currentUser.id,
-        msg: inputMsg.current.value,
-        likeCount: 0,
-        commentCount: 0,
-        createdAt: (new Date()).toString()
-      };
-      const newCommentKey = fireDb.ref('twoots/' + twootId + '/comments/').push().key;
-      let updates = {};
-      updates['twoots/' + twootId + '/comments/' + newCommentKey] = newComment;
-      fireDb.ref().update(updates);
-      history.push(`/twoots/${twootId}`);
     } else if (twootId) {
       fireDb.ref('twoots/' + twootId).transaction(twoot => {
         if (twoot) {
