@@ -12,7 +12,7 @@ const Twoots = ({ fireDb, history }) => {
         console.log('snapshot.val():', snapshot.val());
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  }, [])
 
 
   const twootKeys = twoots ? Object.keys(twoots).reverse() : null;

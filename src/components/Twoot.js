@@ -73,7 +73,7 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
       console.log('users:', users);
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, []);
 
   const getUser = (id) => {
     console.log('id:', id);
