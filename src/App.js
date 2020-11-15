@@ -53,34 +53,33 @@ const App = () => {
   const [users, setUsers] = useContext(UsersContext);
 
   useEffect(() => {
-    if (!users) {
-      fireDb.ref('users')
-        .once('value')
-        .then(snapshot => {
-          console.log('here', snapshot.val());
-          setUsers(snapshot.val());
-        });
-
-      firebase.auth().onAuthStateChanged(user => {
-        console.log('user:', user);
-        if (user) {
-          const newUser = {
-            id: user.uid,
-            displayName: user.displayName,
-            userName: emailToId(user.email),
-            photo: user.photoURL
-          }
-          fireDb.ref('users/' + user.uid).set(newUser);
-          setIsLoggedIn(true);
-          setCurrentUser(newUser);
-
-        } else {
-          setIsLoggedIn(false);
-          setCurrentUser(null);
-        }
+    fireDb.ref('users')
+      .once('value')
+      .then(snapshot => {
+        console.log('here', snapshot.val());
+        setUsers(snapshot.val());
       });
-    }
-  })
+
+    firebase.auth().onAuthStateChanged(user => {
+      console.log('user:', user);
+      if (user) {
+        const newUser = {
+          id: user.uid,
+          displayName: user.displayName,
+          userName: emailToId(user.email),
+          photo: user.photoURL
+        }
+        fireDb.ref('users/' + user.uid).set(newUser);
+        setIsLoggedIn(true);
+        setCurrentUser(newUser);
+
+      } else {
+        setIsLoggedIn(false);
+        setCurrentUser(null);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div>

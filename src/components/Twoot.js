@@ -66,14 +66,13 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   console.log('users:', users);
 
   useEffect(() => {
-    if (!twoot) {
-      fireDb.ref('twoots/' + twootId)
-      .once('value', snapshot => {
-        console.log('twoot snapshot.val():', snapshot.val());
-        setTwoot(snapshot.val());
-        console.log('users:', users);
-      })
-    }
+    fireDb.ref('twoots/' + twootId)
+    .once('value', snapshot => {
+      console.log('twoot snapshot.val():', snapshot.val());
+      setTwoot(snapshot.val());
+      console.log('users:', users);
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
   const getUser = (id) => {

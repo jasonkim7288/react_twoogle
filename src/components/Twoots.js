@@ -5,14 +5,13 @@ import Twoot from './Twoot';
 const Twoots = ({ fireDb, history }) => {
   const [twoots, setTwoots] = useContext(TwootsContext);
   useEffect(() => {
-    if (!twoots) {
-      fireDb.ref('twoots/')
-        .on('value', snapshot => {
-          console.log('snapshot:', snapshot);
-          setTwoots(snapshot.val());
-          console.log('snapshot.val():', snapshot.val());
-        });
-    }
+    fireDb.ref('twoots/')
+      .on('value', snapshot => {
+        console.log('snapshot:', snapshot);
+        setTwoots(snapshot.val());
+        console.log('snapshot.val():', snapshot.val());
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   })
 
 
