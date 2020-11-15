@@ -185,7 +185,7 @@ const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
       }
       { !linkNeeded && twoot && users && currentUser && twoot.comments &&
         Object.keys(twoot.comments).map(commentKey =>
-          <Box display="flex" className={classes.box}>
+          <Box display="flex" className={classes.box} ml={2}>
             <Box mr={2}>
               <img src={getUser(twoot.comments[commentKey].userId).photo} alt="User" className={classes.photo}/>
             </Box>
