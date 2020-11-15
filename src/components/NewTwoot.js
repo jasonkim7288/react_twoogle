@@ -98,7 +98,9 @@ const NewTwoot = ({history, fireDb, twootId, isComment}) => {
   }
 
   const handleSelectEmoji = (emoji) => {
-    const value = inputMsg.current.value + emoji.native;
+    console.log('inputMsg.current.selectionStart:', inputMsg.current.selectionStart);
+    let value = inputMsg.current.value;
+    value = value.slice(0, inputMsg.current.selectionStart) + emoji.native + value.slice(inputMsg.current.selectionStart);
     setMsg(value);
     verifyMsg(value);
     setShowPicker(false);
