@@ -50,7 +50,7 @@ const App = () => {
   const classes = useStyles();
   const [isLoggedIn, setIsLoggedIn] = useContext(IsLoggedInContext);
   const [, setCurrentUser] = useContext(CurrentUserContext);
-  const [users, setUsers] = useContext(UsersContext);
+  const [, setUsers] = useContext(UsersContext);
 
   useEffect(() => {
     fireDb.ref('users')
