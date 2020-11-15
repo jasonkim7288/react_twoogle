@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Twoots from './Twoots';
 import Twoot from './Twoot';
 import NewTwoot from './NewTwoot';
-
+import Profile from './Profile';
 
 const drawerWidth = 200;
 
@@ -38,6 +38,7 @@ const TwootMain = ({ fireDb, history }) => {
         <Route exact path="/twoots/:id/comments/new" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id} isComment={true}/>} />
         <Route exact path="/twoots/:id/edit" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id}/>} />
         <Route exact path="/twoots/:id" render={props => <Twoot {...props} twootId={props.match.params.id} fireDb={fireDb}/>} />
+        <Route path="/profile" render={props => <Profile {...props} />} />
         <Route exact path="/" render={props => <Twoots {...props} fireDb={fireDb}/>} />
       </Switch>
       }

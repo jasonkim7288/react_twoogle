@@ -36,7 +36,7 @@ const menuList = [
     icon: <HomeIcon />
   },
   {
-    to: '/',
+    to: '/profile',
     title: 'Profile',
     icon: <PersonIcon />
   },

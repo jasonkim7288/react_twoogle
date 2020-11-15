@@ -58,7 +58,7 @@ function Alert(props) {
 const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
   const classes = useStyles();
   const [users] = useContext(UsersContext);
-  const [currentUser, ] = useContext(CurrentUserContext)
+  const [currentUser] = useContext(CurrentUserContext)
   const [twoot, setTwoot] = useState(null);
   const [open, setOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
