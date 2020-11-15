@@ -49,6 +49,9 @@ const NewTwoot = ({history, fireDb, twootId, isComment}) => {
             createdAt: (new Date()).toString()
           };
           const newCommentKey = fireDb.ref('twoots/' + twootId + '/comments/').push().key;
+          if (!twootFromDb.comments) {
+            twootFromDb.comments = {};
+          }
           twootFromDb.comments[newCommentKey] = newComment;
         }
         history.push(`/twoots/${twootId}`);
