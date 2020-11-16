@@ -1,8 +1,6 @@
 import { Box, Snackbar, Typography } from '@material-ui/core'
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { UsersContext } from '../contexts/UsersContext';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import FavoriteBorderSharpIcon from '@material-ui/icons/FavoriteBorderSharp';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -13,6 +11,7 @@ import IconBox from './IconBox';
 import LinkBox from './LinkBox';
 import AlertDialog from './AlertDialog';
 import MuiAlert from '@material-ui/lab/Alert';
+import { useGlobalState } from '../config/globalState';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -56,14 +55,13 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props}/>;
 }
 
-const Twoot = ({ twootId, fireDb, linkNeeded, history }) => {
+const Twoot = ({ twootId, linkNeeded, history }) => {
   const classes = useStyles();
-  const [users] = useContext(UsersContext);
-  const [currentUser] = useContext(CurrentUserContext)
+  const { state, fireDb } = useGlobalState();
+  const { users, currentUser } = state;
   const [twoot, setTwoot] = useState(null);
   const [open, setOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
 
   console.log('users:', users);
   console.log('twootId:', twootId);

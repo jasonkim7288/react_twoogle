@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 const IconBox = ({ children, num, handleClick, tooltipTitle }) => {
   const classes = useStyles();
 

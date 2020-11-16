@@ -5,6 +5,7 @@ import Twoots from './Twoots';
 import Twoot from './Twoot';
 import NewTwoot from './NewTwoot';
 import Profile from './Profile';
+import { useGlobalState } from '../config/globalState';
 
 const drawerWidth = 200;
 
@@ -26,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TwootMain = ({ fireDb, history }) => {
+const TwootMain = () => {
+  const { fireDb } = useGlobalState();
   const classes = useStyles();
 
   return (
@@ -34,12 +36,12 @@ const TwootMain = ({ fireDb, history }) => {
       <div className={classes.toolbar} />
       { fireDb &&
       <Switch>
-        <Route path="/twoots/new" render={props => <NewTwoot {...props} fireDb={fireDb}/>} />
-        <Route exact path="/twoots/:id/comments/new" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id} isComment={true}/>} />
-        <Route exact path="/twoots/:id/edit" render={props => <NewTwoot {...props} fireDb={fireDb} twootId={props.match.params.id}/>} />
-        <Route exact path="/twoots/:id" render={props => <Twoot {...props} twootId={props.match.params.id} fireDb={fireDb}/>} />
-        <Route path="/profile" render={props => <Profile {...props} />} />
-        <Route exact path="/" render={props => <Twoots {...props} fireDb={fireDb}/>} />
+        <Route path="/twoots/new" component={NewTwoot} />
+        <Route exact path="/twoots/:id/comments/new" render={props => <NewTwoot {...props} twootId={props.match.params.id} isComment={true}/>} />
+        <Route exact path="/twoots/:id/edit" render={props => <NewTwoot {...props} twootId={props.match.params.id}/>} />
+        <Route exact path="/twoots/:id" render={props => <Twoot {...props} twootId={props.match.params.id}/>} />
+        <Route path="/profile" component={Profile} />
+        <Route exact path="/" component={Twoots} />
       </Switch>
       }
     </main>

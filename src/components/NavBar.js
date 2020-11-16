@@ -6,6 +6,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { Link } from 'react-router-dom';
+import { useGlobalState } from '../config/globalState';
 
 const drawerWidth = 200;
 
@@ -47,7 +48,8 @@ const menuList = [
   }
 ]
 
-const NavBar = ({ window, firebase }) => {
+const NavBar = () => {
+  const { firebase } = useGlobalState();
   const classes = useStyles();
 
   const handleLogOut = () => {

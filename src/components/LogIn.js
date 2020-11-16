@@ -3,6 +3,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import { Box, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import { useGlobalState } from '../config/globalState';
 
 const useStyles = makeStyles((theme) => ({
   leftSide: {
@@ -27,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const LogIn = ({firebase}) => {
+const LogIn = () => {
+  const { firebase } = useGlobalState();
   const classes = useStyles();
 
   const uiConfig = {

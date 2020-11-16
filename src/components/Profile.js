@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core'
-import React, { useContext } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { useGlobalState } from '../config/globalState';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -43,16 +43,17 @@ const useStyles = makeStyles((theme) => ({
 
 const Profile = () => {
   const classes = useStyles();
-  const [currentUser] = useContext(CurrentUserContext);
+  const { state } = useGlobalState();
+  const { currentUser } = state;
 
   return (
     <Box>
-      { currentUser && 
+      { currentUser &&
         <Box display="flex" className={classes.box}>
           <Box m={2} mr={4}>
             {
               <img src={currentUser.photo} alt="User" className={classes.photo}/>
-            }       
+            }
           </Box>
           <Box className={classes.details}>
             <Typography paragraph className={classes.fullName}>
