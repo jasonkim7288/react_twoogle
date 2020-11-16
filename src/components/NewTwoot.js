@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import React, { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button, IconButton, TextField } from '@material-ui/core';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart'
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
+import { useGlobalState } from '../config/globalState';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const NewTwoot = ({history, fireDb, twootId, isComment}) => {
-  const [currentUser] = useContext(CurrentUserContext);
+const NewTwoot = ({history, twootId, isComment}) => {
+  const { state, fireDb } = useGlobalState();
+  const { currentUser } = state;
   const classes = useStyles();
   const inputMsg = useRef();
   const [msg, setMsg] = useState('');

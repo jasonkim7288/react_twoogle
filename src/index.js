@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import AllContextsProvider from './contexts/AllContexts';
+import { StateProvider } from './config/globalState';
 
 ReactDOM.render(
-  <AllContextsProvider>
+  <StateProvider>
     <App />
-  </AllContextsProvider>
+  </StateProvider>
   , document.getElementById('root')
 );

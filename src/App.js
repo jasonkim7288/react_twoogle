@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,14 +7,10 @@ import TwootMain from './components/TwootMain'
 import Header from './components/Header';
 import { blue, pink, deepOrange} from '@material-ui/core/colors'
 import './styles/App.css';
-import { IsLoggedInContext } from './contexts/IsLoggedInContext';
 import LogIn from './components/LogIn';
-import { CurrentUserContext } from './contexts/CurrentUserContext';
-import { firebase, fireDb } from './db/firebase.js';
 import { emailToId } from './utils/strUtils';
-import { UsersContext } from './contexts/UsersContext';
-
-console.log('firebase, fireDb:', firebase, fireDb);
+import { useGlobalState } from './config/globalState';
+import { ACTIONS } from './config/stateReducer';
 
 const darkTheme = responsiveFontSizes(
   createMuiTheme({
@@ -48,16 +44,33 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
-  const [isLoggedIn, setIsLoggedIn] = useContext(IsLoggedInContext);
-  const [, setCurrentUser] = useContext(CurrentUserContext);
-  const [, setUsers] = useContext(UsersContext);
+  const { state, dispatch, firebase, fireDb } = useGlobalState();
+  const { isLoggedIn } = state;
+
+  const setLogin = (value) => {
+    dispatch({
+      type: ACTIONS.SET_IS_LOGGED_IN,
+      payload: value
+    })
+  }
+
+  const setCurrentUser = (value) => {
+    dispatch({
+      type: ACTIONS.SET_CURRENT_USER,
+      payload: value
+    })
+  }
 
   useEffect(() => {
+    console.log('fireDb:', fireDb);
     fireDb.ref('users')
       .once('value')
       .then(snapshot => {
         console.log('here', snapshot.val());
-        setUsers(snapshot.val());
+        dispatch({
+          type: ACTIONS.SET_USERS,
+          payload: snapshot.val()
+        })
       });
 
     firebase.auth().onAuthStateChanged(user => {
@@ -70,16 +83,17 @@ const App = () => {
           photo: user.photoURL
         }
         fireDb.ref('users/' + user.uid).set(newUser);
-        setIsLoggedIn(true);
+        setLogin(true);
         setCurrentUser(newUser);
-
       } else {
-        setIsLoggedIn(false);
+        setLogin(false);
         setCurrentUser(null);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  console.log('isLoggedIn:', isLoggedIn);
 
   return (
     <div>
@@ -92,13 +106,13 @@ const App = () => {
               <div className={classes.root}>
                 <CssBaseline />
                 <Header />
-                <NavBar firebase={firebase}/>
-                <TwootMain firebase={firebase} fireDb={fireDb}/>
+                <NavBar />
+                <TwootMain />
               </div>
             </BrowserRouter>
           </MuiThemeProvider>
         :
-          <LogIn firebase={firebase} />
+          <LogIn />
       )
     }
     </div>
