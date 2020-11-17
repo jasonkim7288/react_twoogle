@@ -3,7 +3,7 @@ import { stateReducer, initialState } from './stateReducer';
 import firebase from 'firebase';
 var fireDb = null;
 
-export const StateContext = createContext();
+const StateContext = createContext();
 
 export const useGlobalState = () => useContext(StateContext);
 
